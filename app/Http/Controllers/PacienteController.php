@@ -13,7 +13,7 @@ class PacienteController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json(Paciente::all());
     }
 
     /**
@@ -21,15 +21,40 @@ class PacienteController extends Controller
      */
     public function store(StorePacienteRequest $request)
     {
-        //
+        try {
+            $paciente = Paciente::create($request->validated());
+            return response()->json([
+                'message' => 'Paciente cadastrado com sucesso.',
+                'data' => $paciente
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Erro ao cadastrar paciente',
+                'erro' => $e->getMessage()
+            ]);
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Paciente $paciente)
+    public function show($id)
     {
-        //
+        try {
+            $paciente = Paciente::with('pacientes')->where('id', $id)->first();
+
+            if(!$paciente) {
+                return response()->json([
+                    'message' => 'Paciente encontrado com sucesso',
+                    'data' => $paciente
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Erro ao buscar o paciente',
+                'erro' => $e->getMessage()
+            ]);
+        }
     }
 
     /**
@@ -37,14 +62,39 @@ class PacienteController extends Controller
      */
     public function update(UpdatePacienteRequest $request, Paciente $paciente)
     {
-        //
+        $paciente->update($request->validated());
+
+        return response()->json([
+            'message' => 'Paciente atualizado com sucesso.',
+            'data' => $paciente
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Paciente $paciente)
+    public function destroy($id)
     {
-        //
+        try {
+        $paciente = Paciente::where('id', $id)->first();
+
+        if (!$paciente) {
+            return response()->json([
+                'message' => 'Paciente não encontrado.'
+            ], 404);
+        }
+
+        $paciente->delete();
+
+        return response()->json([
+            'message' => 'Paciente deletado com sucesso!'
+        ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Erro ao deletar paciente.',
+                'erro' => $e->getMessage()
+            ], 500);
+        }
     }
 }

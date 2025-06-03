@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -15,5 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        
+        //Quando eu devo retornar erros em formato JSON ao invés de HTML padrão
+        $exceptions->shouldRenderJsonWhen(function (Request $request) {
+            return $request->expectsJson() || $request->wantsJson() || $request->isJson();
+        });
     })->create();

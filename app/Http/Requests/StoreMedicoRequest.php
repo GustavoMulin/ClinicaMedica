@@ -24,7 +24,7 @@ class StoreMedicoRequest extends FormRequest
         return [
             'nome' => 'required|string|max:255',
             'especialidade' => 'required|string|max:100',
-            'crm' => 'required',
+            'crm' => 'required|unique:medicos,crm',
             'telefone' => 'required|string|max:20',
             'email' => 'required|email|unique:medicos,email'
         ];
